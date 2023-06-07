@@ -1,8 +1,8 @@
 # 課題　 -非実在ギャルゆっきーとチャットアプリ-
 
 ## DEMO
-https://w-baby-y.github.io/kadai04/
-※ChatGPTのAPIKEYとfirebaseのAPIKEYを求められるが、firebaseのAPIKEYと他の認証に係る情報を組み合わせて利用する必要があるので他人は実質使用できない
+- https://w-baby-y.github.io/kadai04/
+- ※ChatGPTのAPIKEYとfirebaseのAPIKEYを求められるが、firebaseのAPIKEYと他の認証に係る情報を組み合わせて利用する必要があるので他人は実質使用できない
 
 ## ①課題内容
 - 非実在ギャルであるゆっきーとLINE風にチャットができるアプリ
