@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AIギャル</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+
+  <body>
+    <!-- コンテンツ表示画面 -->
+    <div>
+      <div class="line__container">
+        <div class="line__title">藤井ゆっきー</div>
+        <div id="output" class="line__contents scroll"></div>
+      </div>
+    </div>
+    <div id="text-container">
+      <textarea id="text" cols="35" rows="5"></textarea>
+      <button id="send">送信</button>
+      <div>ユーザー名：<input type="text" id="uname" /></div>
+      <button id="out">ログアウト</button>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="module" src="js/main.js"></script>
+  </body>
+</html>

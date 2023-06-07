@@ -1,5 +1,7 @@
 body {
-	font-family: Verdana, Roboto, "Droid Sans", "游ゴシック", YuGothic, "メイリオ", Meiryo, "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "ＭＳ Ｐゴシック", sans-serif;
+  font-family: Verdana, Roboto, "Droid Sans", "游ゴシック", YuGothic, "メイリオ",
+    Meiryo, "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN",
+    "ＭＳ Ｐゴシック", sans-serif;
 }
 
 /*/////////////////////////////////////////////////
@@ -35,26 +37,26 @@ textarea:focus {
 }
 
 button {
-    background-color: #007bff;
-    border-radius: 2px;
-    border: none;
-    color: #fff;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: 500;
-    line-height: 1;
-    padding: 10px 16px;
-    position: relative;
-    transition: all 0.15s ease-in-out;
-  }
-  
-  button:hover {
-    background-color: #0056b3;
-  }
-  
-  button:active svg path {
-    stroke: #0056b3;
-  }
+  background-color: #007bff;
+  border-radius: 2px;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1;
+  padding: 10px 16px;
+  position: relative;
+  transition: all 0.15s ease-in-out;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+button:active svg path {
+  stroke: #0056b3;
+}
 /*/////////////////////////////////////////////////
 //LINE風チャット画面(会話方式)を記事に表示する方法
 /////////////////////////////////////////////////*/
@@ -204,4 +206,30 @@ button {
   bottom: 0px;
   font-size: 80%;
   color: #ffffff;
+}
+
+/* ログイン画面 */
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+.login-button {
+  display: block;
+  margin: 0 auto;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  background-color: #007bff;
+  border-radius: 4px;
+  padding: 10px 20px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.login-button:hover {
+  background-color: #0056b3;
 }

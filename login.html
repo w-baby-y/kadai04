@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/style.css" />
+    <title>ログイン</title>
+  </head>
+  <body>
+    <div class="login-container">
+      <button class="login-button" id="login">login</button>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
+      import {
+        getAuth,
+        signInWithPopup,
+        GoogleAuthProvider,
+        signOut,
+        onAuthStateChanged,
+      } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-auth.js";
+
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyDWLBIwrRjzcqzyrkJitbUl104t4VhhtSY",
+        authDomain: "gsdev0603-18001.firebaseapp.com",
+        databaseURL: "https://gsdev0603-18001-default-rtdb.firebaseio.com",
+        projectId: "gsdev0603-18001",
+        storageBucket: "gsdev0603-18001.appspot.com",
+        messagingSenderId: "970222459169",
+        appId: "1:970222459169:web:d4769739a082c0c64bc660",
+      };
+      const app = initializeApp(firebaseConfig);
+
+      ///////////////////
+      //GoogleAuth
+      ///////////////////
+      const provider = new GoogleAuthProvider();
+      provider.addScope("https://www.googleapis.com/auth/contacts.readonly");
+      const auth = getAuth();
+      ///////////////////
+      //ログイン処理
+      ///////////////////
+      $("#login").on("click", function () {
+        //Google認証完了後の処理
+        signInWithPopup(auth, provider)
+          .then((result) => {
+            //ログイン後のページ遷移
+            location.href = "app.html";
+          })
+          .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            const email = error.email;
+            const credential = GoogleAuthProvider.credentialFromError(error);
+          });
+      });
+    </script>
+  </body>
+</html>

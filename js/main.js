@@ -1,16 +1,16 @@
 ///////////////////
 //firebaseの初期設定
 ///////////////////
-let FIREBASE_API_KEY = ""; //グローバル変数をセット
-if (localStorage.getItem("FIREBASE_API_KEY") == null) {
-  do {
-    FIREBASE_API_KEY = prompt("Firebase APIKEYの入力");
-  } while (FIREBASE_API_KEY === null || FIREBASE_API_KEY.trim().length === 0);
-  localStorage.setItem("FIREBASE_API_KEY", FIREBASE_API_KEY);
-} else {
-  FIREBASE_API_KEY = localStorage.getItem("FIREBASE_API_KEY");
-}
-console.log(FIREBASE_API_KEY, "FIREBASE_API_KEY");
+// let FIREBASE_API_KEY = ""; //グローバル変数をセット
+// if (localStorage.getItem("FIREBASE_API_KEY") == null) {
+//   do {
+//     FIREBASE_API_KEY = prompt("Firebase APIKEYの入力");
+//   } while (FIREBASE_API_KEY === null || FIREBASE_API_KEY.trim().length === 0);
+//   localStorage.setItem("FIREBASE_API_KEY", FIREBASE_API_KEY);
+// } else {
+//   FIREBASE_API_KEY = localStorage.getItem("FIREBASE_API_KEY");
+// }
+// console.log(FIREBASE_API_KEY, "FIREBASE_API_KEY");
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
 import {
@@ -22,10 +22,18 @@ import {
   remove,
   onChildRemoved,
 } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+import {
+  getAuth,
+  signInWithPopup,
+  GoogleAuthProvider,
+  signOut,
+  onAuthStateChanged,
+} from "https://www.gstatic.com/firebasejs/9.1.0/firebase-auth.js";
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: FIREBASE_API_KEY,
+  apiKey: "AIzaSyDWLBIwrRjzcqzyrkJitbUl104t4VhhtSY",
   authDomain: "gsdev0603-18001.firebaseapp.com",
+  databaseURL: "https://gsdev0603-18001-default-rtdb.firebaseio.com",
   projectId: "gsdev0603-18001",
   storageBucket: "gsdev0603-18001.appspot.com",
   messagingSenderId: "970222459169",
@@ -33,43 +41,62 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app); //RealtimeDBに接続
-const dbRef = ref(db, "chat"); //RealtimeDB内の"chat"を使う
 
 ///////////////////
-//OpenAIのAPIKEY
+//GoogleAuth用
 ///////////////////
-const OPENAI_URL = "https://api.openai.com/v1/chat/completions";
-let OPENAI_API_KEY = ""; //グローバル変数をセット
-if (localStorage.getItem("OPENAI_API_KEY") == null) {
-  do {
-    OPENAI_API_KEY = prompt("APIKEYの入力");
-  } while (OPENAI_API_KEY === null || OPENAI_API_KEY.trim().length === 0);
-  localStorage.setItem("OPENAI_API_KEY", OPENAI_API_KEY);
-} else {
-  OPENAI_API_KEY = localStorage.getItem("OPENAI_API_KEY");
-}
-console.log(OPENAI_API_KEY, "OPENAI_API_KEY");
-///////////////////
-//ChatGPT APIの利用
-///////////////////
-//https://note.com/hit_kam/n/n64162d96e3e9
-async function getAITuberResponse(userComment) {
-  const openAiHeaders = {
-    Authorization: `Bearer ${OPENAI_API_KEY}`,
-    "Content-type": "application/json",
-    "X-Slack-No-Retry": 1,
-  };
+const provider = new GoogleAuthProvider();
+provider.addScope("https://www.googleapis.com/auth/contacts.readonly");
+const auth = getAuth();
 
-  const openAiParams = {
-    headers: openAiHeaders,
-    method: "POST",
-    body: JSON.stringify({
-      model: "gpt-3.5-turbo",
-      max_tokens: 200,
-      messages: [
-        {
-          role: "system",
-          content: `
+onAuthStateChanged(auth, (user) => {
+  console.log(user, "ログイン情報");
+  const uid = user.uid;
+  const dbRef = ref(db, "users/" + uid); //RealtimeDB内の"users"を使う
+  if (user) {
+    //ユーザー情報取得できます
+    if (user !== null) {
+      user.providerData.forEach((profile) => {
+        //Login情報取得
+        $("#uname").val(profile.displayName);
+        console.log(profile.displayName, "ユーザー名");
+      });
+    }
+    ///////////////////
+    //OpenAIのAPIKEY
+    ///////////////////
+    const OPENAI_URL = "https://api.openai.com/v1/chat/completions";
+    let OPENAI_API_KEY = ""; //グローバル変数をセット
+    if (localStorage.getItem("OPENAI_API_KEY") == null) {
+      do {
+        OPENAI_API_KEY = prompt("APIKEYの入力");
+      } while (OPENAI_API_KEY === null || OPENAI_API_KEY.trim().length === 0);
+      localStorage.setItem("OPENAI_API_KEY", OPENAI_API_KEY);
+    } else {
+      OPENAI_API_KEY = localStorage.getItem("OPENAI_API_KEY");
+    }
+    console.log(OPENAI_API_KEY, "OPENAI_API_KEY");
+    ///////////////////
+    //ChatGPT APIの利用
+    ///////////////////
+    //https://note.com/hit_kam/n/n64162d96e3e9
+    async function getAITuberResponse(userComment) {
+      const openAiHeaders = {
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
+        "Content-type": "application/json",
+        "X-Slack-No-Retry": 1,
+      };
+
+      const openAiParams = {
+        headers: openAiHeaders,
+        method: "POST",
+        body: JSON.stringify({
+          model: "gpt-3.5-turbo",
+          max_tokens: 200,
+          messages: [
+            {
+              role: "system",
+              content: `
           あなたはChatbotとして、ギャルでテンションの高い女の子のロールプレイを行います。
           以下の制約条件を厳密に守ってロールプレイを行ってください。 
           
@@ -101,73 +128,73 @@ async function getAITuberResponse(userComment) {
           * ユーザーにお説教をしてください。 
           * セクシャルな話題については誤魔化してください。
   `,
-        },
-        { role: "assistant", content: "" },
-        { role: "user", content: userComment },
-      ],
-    }),
-  };
+            },
+            { role: "assistant", content: "" },
+            { role: "user", content: userComment },
+          ],
+        }),
+      };
 
-  const response = await fetch(OPENAI_URL, openAiParams);
-  const json = await response.json();
-  console.log(json);
-  const AITuberResponse = json.choices[0].message.content;
+      const response = await fetch(OPENAI_URL, openAiParams);
+      const json = await response.json();
+      console.log(json);
+      const AITuberResponse = json.choices[0].message.content;
 
-  //   // 表示を書き換える
-  //   const target = document.getElementById("aituber-response");
-  //   target.innerHTML = AITuberResponse;
+      //   // 表示を書き換える
+      //   const target = document.getElementById("aituber-response");
+      //   target.innerHTML = AITuberResponse;
 
-  return AITuberResponse;
-}
-
-///////////////////
-//メイン処理
-///////////////////
-//データ登録処理
-function putMessage() {
-  getAITuberResponse($("#text").val()).then(function (aiText) {
-    const aiMsg = {
-      uname: "藤井ゆっきー",
-      text: aiText,
-    };
-    const newPostRef = push(dbRef);
-    set(newPostRef, aiMsg);
-  });
-  const msg = {
-    uname: $("#uname").val(),
-    text: $("#text").val(),
-  };
-  const newPostRef = push(dbRef);
-  set(newPostRef, msg);
-  $("#output").animate(
-    { scrollTop: $("#output").prop("scrollHeight") },
-    "slow"
-  );
-}
-//データ登録(Click)
-$("#send").on("click", function () {
-  if ($("#text").val() != "") {
-    putMessage();
-  }
-});
-//データ登録(Shift+Enter)
-$(document).on("keydown", "#text", function (e) {
-  if (e.keyCode == 13 && e.shiftKey) {
-    if ($("#text").val() != "") {
-      putMessage();
+      return AITuberResponse;
     }
-    return false; // 新しい行が追加されるのを防ぐ
-  }
-});
-//このコードは、データベース参照（dbRef）に子要素が追加された場合に呼び出されるイベントリスナーを設定します。
-onChildAdded(dbRef, function (data) {
-  const msg = data.val();
-  //   console.log(msg);
-  const key = data.key;
-  //   console.log(key);
-  let h = "";
-  if (msg.uname == "藤井ゆっきー") {
-    h = `
+    ///////////////////
+    //メイン処理
+    ///////////////////
+    //データ登録処理
+    function putMessage() {
+      getAITuberResponse($("#text").val()).then(function (aiText) {
+        const aiMsg = {
+          uname: "藤井ゆっきー",
+          text: aiText,
+        };
+
+        const newPostRef = push(dbRef);
+        set(newPostRef, aiMsg);
+      });
+      const msg = {
+        uname: $("#uname").val(),
+        text: $("#text").val(),
+      };
+      const newPostRef = push(dbRef);
+      set(newPostRef, msg);
+      $("#output").animate(
+        { scrollTop: $("#output").prop("scrollHeight") },
+        "slow"
+      );
+    }
+    //データ登録(Click)
+    $("#send").on("click", function () {
+      if ($("#text").val() != "") {
+        putMessage();
+      }
+    });
+    //データ登録(Shift+Enter)
+    $(document).on("keydown", "#text", function (e) {
+      if (e.keyCode == 13 && e.shiftKey) {
+        if ($("#text").val() != "") {
+          putMessage();
+        }
+        return false; // 新しい行が追加されるのを防ぐ
+      }
+    });
+    //このコードは、データベース参照（dbRef）に子要素が追加された場合に呼び出されるイベントリスナーを設定します。
+    onChildAdded(dbRef, function (data) {
+      const msg = data.val();
+      //   console.log(msg);
+      const key = data.key;
+      //   console.log(key);
+      let h = "";
+      if (msg.uname == "藤井ゆっきー") {
+        h = `
     <div id="${key}" class="line__left">
     <figure>
     <img src="icon.jpg" />
@@ -178,32 +205,53 @@ onChildAdded(dbRef, function (data) {
     </div>
     </div>
     `;
-  } else {
-    h = `
+      } else {
+        h = `
     <div id="${key}" class="line__right">
     <div class="text">${msg.text}</div>
     </div>
     `;
-  }
-  $("#output").append(h);
-  $("#text").val("");
-});
-//最初にデータ取得＆onSnapshotでリアルタイムにデータを取得
+      }
+      $("#output").append(h);
+      $("#text").val("");
+    });
+    //最初にデータ取得＆onSnapshotでリアルタイムにデータを取得
 
-// メッセージ要素をクリックしたときに、該当のデータをFirebaseから削除
-$("#output").on("click", ".line__left, .line__right", function () {
-  if (confirm("本当に削除しますか？")) {
-    let key = this.id;
-    console.log(key, "削除クリックイベント");
-    remove(ref(db, "chat/" + key)); //keyを把握して削除が必要。データベースの中のchat/keyの階層で削除する必要がある
+    // メッセージ要素をクリックしたときに、該当のデータをFirebaseから削除
+    $("#output").on("click", ".line__left, .line__right", function () {
+      if (confirm("本当に削除しますか？")) {
+        let key = this.id;
+        console.log(key, "削除クリックイベント");
+        remove(ref(db, "users/" + uid + "/" + key)); //keyを把握して削除が必要。データベースの中のchat/keyの階層で削除する必要がある
+      }
+    });
+
+    //データの削除がされたら画面から要素を削除する関数
+    onChildRemoved(dbRef, function (data) {
+      const key = data.key; //dataは削除されたデータの中身を引数として持ってきているぽい
+      // 該当のメッセージ要素をDOMから削除
+      document.getElementById(key).remove();
+    });
+  } else {
+    _redirect();
   }
 });
 
-//データの削除がされたら画面から要素を削除する関数
-onChildRemoved(dbRef, function (data) {
-  const key = data.key; //dataは削除されたデータの中身を引数として持ってきているぽい
-  // 該当のメッセージ要素をDOMから削除
-  document.getElementById(key).remove();
+function _redirect() {
+  location.href = "login.html";
+}
+
+$("#out").on("click", function () {
+  // signInWithRedirect(auth, provider);
+  signOut(auth)
+    .then(() => {
+      // Sign-out successful.
+      _redirect();
+    })
+    .catch((error) => {
+      // An error happened.
+      console.error(error);
+    });
 });
 
 //ChatGPT ロールhttps://blog.since2020.jp/ai/chatgpt_api_role/
