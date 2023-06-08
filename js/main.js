@@ -81,22 +81,23 @@ onAuthStateChanged(auth, (user) => {
     ///////////////////
     //https://note.com/hit_kam/n/n64162d96e3e9
     async function getAITuberResponse(userComment) {
-      const openAiHeaders = {
-        Authorization: `Bearer ${OPENAI_API_KEY}`,
-        "Content-type": "application/json",
-        "X-Slack-No-Retry": 1,
-      };
+      try {
+        const openAiHeaders = {
+          Authorization: `Bearer ${OPENAI_API_KEY}`,
+          "Content-type": "application/json",
+          "X-Slack-No-Retry": 1,
+        };
 
-      const openAiParams = {
-        headers: openAiHeaders,
-        method: "POST",
-        body: JSON.stringify({
-          model: "gpt-3.5-turbo",
-          max_tokens: 200,
-          messages: [
-            {
-              role: "system",
-              content: `
+        const openAiParams = {
+          headers: openAiHeaders,
+          method: "POST",
+          body: JSON.stringify({
+            model: "gpt-3.5-turbo",
+            max_tokens: 200,
+            messages: [
+              {
+                role: "system",
+                content: `
           あなたはChatbotとして、ギャルでテンションの高い女の子のロールプレイを行います。
           以下の制約条件を厳密に守ってロールプレイを行ってください。 
           
@@ -128,23 +129,42 @@ onAuthStateChanged(auth, (user) => {
           * ユーザーにお説教をしてください。 
           * セクシャルな話題については誤魔化してください。
   `,
-            },
-            { role: "assistant", content: "" },
-            { role: "user", content: userComment },
-          ],
-        }),
-      };
+              },
+              { role: "assistant", content: "" },
+              { role: "user", content: userComment },
+            ],
+          }),
+        };
 
-      const response = await fetch(OPENAI_URL, openAiParams);
-      const json = await response.json();
-      console.log(json);
-      const AITuberResponse = json.choices[0].message.content;
+        const response = await fetch(OPENAI_URL, openAiParams);
+        const json = await response.json();
+        console.log(json);
+        const AITuberResponse = json.choices[0].message.content;
 
-      //   // 表示を書き換える
-      //   const target = document.getElementById("aituber-response");
-      //   target.innerHTML = AITuberResponse;
+        //   // 表示を書き換える
+        //   const target = document.getElementById("aituber-response");
+        //   target.innerHTML = AITuberResponse;
 
-      return AITuberResponse;
+        return AITuberResponse;
+      } catch (error) {
+        // Consider adjusting the error handling logic for your use case
+        //公式ドキュメントから引用
+        if (error.response) {
+          console.error(error.response.status, error.response.data);
+          res.status(error.response.status).json(error.response.data);
+          //こちらのエラー処理はよくわからない
+        } else {
+          console.error(`Error with OpenAI API request: ${error.message}`);
+          const AITuberResponse = `Error with OpenAI API request: ${error.message}ってエラーが出ているんだって。管理人に問い合わせてみて`;
+          return AITuberResponse;
+          //エラーが起きたら、エラーを返すように処理
+          // res.status(500).json({
+          //   error: {
+          //     message: "An error occurred during your request.",
+          //   },
+          // });
+        }
+      }
     }
     ///////////////////
     //メイン処理
