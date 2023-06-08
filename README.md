@@ -33,3 +33,4 @@
 - [感想]ChatGPT の API を使うとおもしろいことが色々できる。AITuber が局所的に流行っていることを知っていたので実装が早くできた
 - [参考記事]AITuber 実装 https://note.com/hit_kam/n/n64162d96e3e9
 - [参考記事]LINE 風画面 CSS https://nakox.jp/web/coding/chat_line_css
+- [参考記事]会話履歴 https://moripro.net/gas-chatgptlike-tool/
