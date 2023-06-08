@@ -12,15 +12,19 @@
     <!-- コンテンツ表示画面 -->
     <div>
       <div class="line__container">
-        <div class="line__title">藤井ゆっきー</div>
+        <div class="line__title">
+          <button id="out">🚪</button>
+          <span>藤井ゆっきー</span>
+        </div>
         <div id="output" class="line__contents scroll"></div>
       </div>
     </div>
     <div id="text-container">
-      <textarea id="text" cols="35" rows="2"></textarea>
-      <button id="send">送信</button>
+      <div id="text-send-wrap">
+        <textarea id="text" cols="25" rows="2"></textarea>
+        <button id="send">送信</button>
+      </div>
       <div>ユーザー名：<input type="text" id="uname" /></div>
-      <button id="out">ログアウト</button>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>

@@ -57,6 +57,18 @@ button:hover {
 button:active svg path {
   stroke: #0056b3;
 }
+
+/* .text-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+} */
+
+#text-send-wrap {
+  display: flex;
+  align-items: center;
+}
+
 /*/////////////////////////////////////////////////
 //LINE風チャット画面(会話方式)を記事に表示する方法
 /////////////////////////////////////////////////*/
@@ -77,6 +89,19 @@ button:active svg path {
   text-align: center;
   font-size: 150%;
   color: #ffffff;
+  display: flex; /* 下記3行ログアウトをヘッダに入れるため追加 */
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 下記ログアウトをヘッダに入れるため追加 */
+.line__title span {
+  flex-grow: 1;
+  text-align: center;
+}
+
+.line__title #out {
+  margin-right: auto;
 }
 
 /* 会話部分 */
