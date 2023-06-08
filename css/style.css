@@ -102,6 +102,7 @@ button:active svg path {
 
 .line__title #out {
   margin-right: auto;
+  position: absolute; /* ログアウトボタンがセンタリングの邪魔するため */
 }
 
 /* 会話部分 */
