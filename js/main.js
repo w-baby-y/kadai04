@@ -1,6 +1,7 @@
-///////////////////
+//////////////////////////////////////
 //firebaseの初期設定
-///////////////////
+//////////////////////////////////////
+//APIKEYの保存は不要になった
 // let FIREBASE_API_KEY = ""; //グローバル変数をセット
 // if (localStorage.getItem("FIREBASE_API_KEY") == null) {
 //   do {
@@ -11,7 +12,6 @@
 //   FIREBASE_API_KEY = localStorage.getItem("FIREBASE_API_KEY");
 // }
 // console.log(FIREBASE_API_KEY, "FIREBASE_API_KEY");
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
 import {
   getDatabase,
@@ -49,12 +49,15 @@ const provider = new GoogleAuthProvider();
 provider.addScope("https://www.googleapis.com/auth/contacts.readonly");
 const auth = getAuth();
 
+//////////////////////////////////////
+//認証完了後の処理
+//////////////////////////////////////
 onAuthStateChanged(auth, (user) => {
   console.log(user, "ログイン情報");
   const uid = user.uid;
   const dbRef = ref(db, "users/" + uid); //RealtimeDB内の"users"を使う
   if (user) {
-    //ユーザー情報取得できます
+    //ユーザー情報取得し、unameに代入
     if (user !== null) {
       user.providerData.forEach((profile) => {
         //Login情報取得
@@ -62,9 +65,9 @@ onAuthStateChanged(auth, (user) => {
         console.log(profile.displayName, "ユーザー名");
       });
     }
-    ///////////////////
-    //OpenAIのAPIKEY
-    ///////////////////
+    //////////////////////////////////////
+    //OpenAIのAPIKEYをローカルストレージに保存
+    //////////////////////////////////////
     const OPENAI_URL = "https://api.openai.com/v1/chat/completions";
     let OPENAI_API_KEY = ""; //グローバル変数をセット
     if (localStorage.getItem("OPENAI_API_KEY") == null) {
@@ -76,9 +79,9 @@ onAuthStateChanged(auth, (user) => {
       OPENAI_API_KEY = localStorage.getItem("OPENAI_API_KEY");
     }
     console.log(OPENAI_API_KEY, "OPENAI_API_KEY");
-    ///////////////////
+    //////////////////////////////////////
     //ChatGPT APIの利用
-    ///////////////////
+    //////////////////////////////////////
     //https://note.com/hit_kam/n/n64162d96e3e9
     async function getAITuberResponse(userComment) {
       try {
@@ -166,10 +169,9 @@ onAuthStateChanged(auth, (user) => {
         }
       }
     }
-    ///////////////////
-    //メイン処理
-    ///////////////////
-    //データ登録処理
+    //////////////////////////////////////
+    //firebaseに保存する関数
+    //////////////////////////////////////
     function putMessage() {
       getAITuberResponse($("#text").val()).then(function (aiText) {
         const aiMsg = {
@@ -206,6 +208,9 @@ onAuthStateChanged(auth, (user) => {
         return false; // 新しい行が追加されるのを防ぐ
       }
     });
+    //////////////////////////////////////
+    //データベースを監視して実行する処理
+    //////////////////////////////////////
     //このコードは、データベース参照（dbRef）に子要素が追加された場合に呼び出されるイベントリスナーを設定します。
     onChildAdded(dbRef, function (data) {
       const msg = data.val();
@@ -237,6 +242,9 @@ onAuthStateChanged(auth, (user) => {
     });
     //最初にデータ取得＆onSnapshotでリアルタイムにデータを取得
 
+    //////////////////////////////////////
+    //チャットの削除処理
+    //////////////////////////////////////
     // メッセージ要素をクリックしたときに、該当のデータをFirebaseから削除
     $("#output").on("click", ".line__left, .line__right", function () {
       if (confirm("本当に削除しますか？")) {
@@ -245,7 +253,6 @@ onAuthStateChanged(auth, (user) => {
         remove(ref(db, "users/" + uid + "/" + key)); //keyを把握して削除が必要。データベースの中のchat/keyの階層で削除する必要がある
       }
     });
-
     //データの削除がされたら画面から要素を削除する関数
     onChildRemoved(dbRef, function (data) {
       const key = data.key; //dataは削除されたデータの中身を引数として持ってきているぽい
@@ -253,14 +260,18 @@ onAuthStateChanged(auth, (user) => {
       document.getElementById(key).remove();
     });
   } else {
+    //ユーザー情報がなくなったらredirectを実行
     _redirect();
   }
 });
 
+//////////////////////////////////////
+//リダイレクト関数
+//////////////////////////////////////
 function _redirect() {
   location.href = "login.html";
 }
-
+//ログアウトボタンを押した際の動作
 $("#out").on("click", function () {
   // signInWithRedirect(auth, provider);
   signOut(auth)
