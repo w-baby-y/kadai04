@@ -140,13 +140,13 @@ onAuthStateChanged(auth, (user) => {
         const response = await fetch(OPENAI_URL, openAiParams);
         const json = await response.json();
         console.log(json);
-        const AITuberResponse = json.choices[0].message.content;
+        // const AITuberResponse = json.choices[0].message.content;
 
         //   // 表示を書き換える
         //   const target = document.getElementById("aituber-response");
         //   target.innerHTML = AITuberResponse;
 
-        return AITuberResponse;
+        return json.choices[0].message.content;
       } catch (error) {
         // Consider adjusting the error handling logic for your use case
         //公式ドキュメントから引用
@@ -156,8 +156,8 @@ onAuthStateChanged(auth, (user) => {
           //こちらのエラー処理はよくわからない
         } else {
           console.error(`Error with OpenAI API request: ${error.message}`);
-          const AITuberResponse = `Error with OpenAI API request: ${error.message}ってエラーが出ているんだって。管理人に問い合わせてみて`;
-          return AITuberResponse;
+          const ans = `Error with OpenAI API request: ${error.message}ってエラーが出ているんだって。管理人に問い合わせてみて`;
+          return ans;
           //エラーが起きたら、エラーを返すように処理
           // res.status(500).json({
           //   error: {
