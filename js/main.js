@@ -189,14 +189,19 @@ onAuthStateChanged(auth, (user) => {
     //firebaseに保存する関数
     //////////////////////////////////////
     function putMessage() {
+      //ユーザーが入力したテキストをデータベースに保存後、AIの返信が非同期処理でデータベースに保存される
       getAITuberResponse($("#text").val()).then(function (aiText) {
         const aiMsg = {
           uname: "藤井ゆっきー",
           text: aiText,
         };
-
         const newPostRef = push(dbRef);
         set(newPostRef, aiMsg);
+        //出力後に最下段までスクロール
+        $("#output").animate(
+          { scrollTop: $("#output").prop("scrollHeight") },
+          "slow"
+        );
       });
       const msg = {
         uname: $("#uname").val(),
@@ -204,6 +209,7 @@ onAuthStateChanged(auth, (user) => {
       };
       const newPostRef = push(dbRef);
       set(newPostRef, msg);
+      //出力後に最下段までスクロール
       $("#output").animate(
         { scrollTop: $("#output").prop("scrollHeight") },
         "slow"
